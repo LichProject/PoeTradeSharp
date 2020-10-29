@@ -39,6 +39,8 @@ namespace PoeTradeSharp
         /// </summary>
         private readonly WebSocket webSocket;
 
+        bool _authenticated;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="WebsocketProtocol" /> class.
         /// </summary>
@@ -194,7 +196,14 @@ namespace PoeTradeSharp
         /// </param>
         private void OnMessage(object sender, MessageEventArgs e)
         {
-            Dictionary<string, Stack<string>> p = JsonConvert.DeserializeObject<Dictionary<string, Stack<string>>>(e.Data);
+            var data = e.Data;
+            if (!_authenticated && data.Contains("auth"))
+            {
+                _authenticated = true;
+                return;
+            }
+
+            Dictionary<string, Stack<string>> p = JsonConvert.DeserializeObject<Dictionary<string, Stack<string>>>(data);
             if (!p.ContainsKey("new") && p["new"].Count == 0)
             {
                 this.LOG?.Invoke(this, $"[ERROR] Invalid Websocket Message: {p.ToString()}");

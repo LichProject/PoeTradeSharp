@@ -59,6 +59,11 @@ namespace PoeTradeSharp
         /// PathOfExile User Account Cookie.
         /// </summary>
         private static string userSessionCookie = string.Empty;
+        
+        static readonly WebHeaderCollection DefaultHeaders = new WebHeaderCollection
+        {
+            [HttpRequestHeader.UserAgent] = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.169 Safari/537.36"
+        };
 
         /// <summary>
         ///  Initializes static members of the <see cref="RestClient" /> class.
@@ -232,6 +237,8 @@ namespace PoeTradeSharp
         /// </returns>
         private static JObject MakeRequest(WebClient webClient, string url, string method, string data = "")
         {
+            webClient.Headers.Add(DefaultHeaders);
+            
             if (!string.IsNullOrWhiteSpace(userSessionCookie))
             {
                 webClient.Headers.Add(HttpRequestHeader.Cookie, userSessionCookie);
